@@ -79,12 +79,14 @@ pub fn generate_world_with_options(
     let mut current_progress_prcs: f64 = 25.0;
     let mut last_emitted_progress: f64 = current_progress_prcs;
 
-    // Pre-scan: detect building relation outlines that should be suppressed.
-    // Only applies to type=building relations (NOT type=multipolygon).
-    // When a type=building relation has "part" members, the outline way should not
-    // render as a standalone building, the individual parts render instead.
+    // Pre-scan: detect building outlines that should be suppressed because they have building:part ways inside them.
+    // This applies to both:
+    // 1. type=building relations with Part members
+    // 2. Building outlines (building=*) that contain building:part ways spatially
     let suppressed_building_outlines: HashSet<u64> = {
         let mut outlines = HashSet::new();
+
+        // Handle type=building relations with Part members
         for element in &elements {
             if let ProcessedElement::Relation(rel) = element {
                 let is_building_type = rel.tags.get("type").map(|t| t.as_str()) == Some("building");
@@ -103,6 +105,46 @@ pub fn generate_world_with_options(
                 }
             }
         }
+
+        // Handle building outlines that contain building:part ways spatially
+        for element in &elements {
+            if let ProcessedElement::Way(way) = element {
+                if way.tags.contains_key("building:part") {
+                    if let Some(part_points) = flood_fill_cache.way_cache().get(&way.id) {
+                        if part_points.is_empty() {
+                            continue;
+                        }
+                        let center_x: i64 = part_points.iter().map(|(x, _)| *x as i64).sum::<i64>()
+                            / part_points.len() as i64;
+                        let center_z: i64 = part_points.iter().map(|(_, z)| *z as i64).sum::<i64>()
+                            / part_points.len() as i64;
+
+                        for outline in &elements {
+                            if let ProcessedElement::Way(outline_way) = outline {
+                                if outline_way.tags.contains_key("building")
+                                    && !outline_way.tags.contains_key("building:part")
+                                    && !outlines.contains(&outline_way.id)
+                                {
+                                    if let Some(outline_points) =
+                                        flood_fill_cache.way_cache().get(&outline_way.id)
+                                    {
+                                        let center_in_outline =
+                                            outline_points.iter().any(|(ox, oz)| {
+                                                *ox as i64 == center_x && *oz as i64 == center_z
+                                            });
+                                        if center_in_outline {
+                                            outlines.insert(outline_way.id);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         outlines
     };
 
@@ -128,8 +170,6 @@ pub fn generate_world_with_options(
         match &element {
             ProcessedElement::Way(way) => {
                 if way.tags.contains_key("building") || way.tags.contains_key("building:part") {
-                    // Skip building outlines that are suppressed by building relations with parts.
-                    // The individual building:part ways will render instead.
                     if !suppressed_building_outlines.contains(&way.id) {
                         buildings::generate_buildings(
                             &mut editor,

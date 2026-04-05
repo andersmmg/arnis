@@ -410,6 +410,11 @@ impl FloodFillCache {
             self.way_cache.remove(&id);
         }
     }
+
+    /// Returns a reference to the way cache for reading cached flood fill results.
+    pub fn way_cache(&self) -> &FnvHashMap<u64, Vec<(i32, i32)>> {
+        &self.way_cache
+    }
 }
 
 impl Default for FloodFillCache {
