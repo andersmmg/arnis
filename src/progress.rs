@@ -32,11 +32,18 @@ pub fn is_running_with_gui() -> bool {
 /// [7/7] Saving world... - Starts at: 90% / Completes at: 100%
 ///
 /// The function `emit_gui_progress_update` is used to send real-time progress updates to the UI.
-pub fn emit_gui_progress_update(progress: f64, message: &str) {
+pub fn emit_gui_progress_update(
+    progress: f64,
+    message: &str,
+    step: Option<&str>,
+    estimate: Option<&str>,
+) {
     if let Some(window) = get_main_window() {
         let payload = json!({
             "progress": progress,
-            "message": message
+            "message": message,
+            "step": step.unwrap_or(""),
+            "estimate": estimate.unwrap_or("")
         });
 
         if let Err(e) = window.emit("progress-update", payload) {
@@ -54,7 +61,7 @@ pub fn emit_gui_error(message: &str) {
     } else {
         message
     };
-    emit_gui_progress_update(0.0, &format!("Error! {truncated_message}"));
+    emit_gui_progress_update(0.0, &format!("Error! {truncated_message}"), None, None);
 }
 
 /// Emits an event when the world map preview is ready

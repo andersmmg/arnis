@@ -181,6 +181,33 @@ button:hover {
   margin-top: auto;
 }
 
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-step-text {
+  font-size: 0.9em;
+  color: #b3b3b3;
+  min-width: 40px;
+}
+
+.progress-info-text {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9em;
+  color: #ececec;
+}
+
+.progress-estimate-text {
+  font-size: 0.9em;
+  color: #b3b3b3;
+  min-width: 60px;
+  text-align: right;
+}
+
 .progress-row {
   display: flex;
   align-items: center;

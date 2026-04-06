@@ -799,7 +799,7 @@ impl<'a> WorldEditor<'a> {
     #[allow(unreachable_code)]
     fn save_bedrock(&mut self) {
         println!("{} Saving Bedrock world...", "[7/7]".bold());
-        emit_gui_progress_update(90.0, "Saving Bedrock world...");
+        emit_gui_progress_update(90.0, "Saving Bedrock world...", Some("7/7"), None);
 
         #[cfg(feature = "bedrock")]
         {

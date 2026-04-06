@@ -230,13 +230,38 @@ function setupProgressListener() {
   const progressBar = document.getElementById("progress-bar");
   const progressInfo = document.getElementById("progress-info");
   const progressDetail = document.getElementById("progress-detail");
+  const progressStep = document.getElementById("progress-step");
+  const progressEstimate = document.getElementById("progress-estimate");
+
+  const startTime = Date.now();
 
   window.__TAURI__.event.listen("progress-update", (event) => {
-    const { progress, message } = event.payload;
+    const { progress, message, step, estimate } = event.payload;
 
     if (progress != -1) {
       progressBar.style.width = `${progress}%`;
       progressDetail.textContent = `${Math.round(progress)}%`;
+    }
+
+    if (step) {
+      progressStep.textContent = step;
+    }
+
+    if (estimate) {
+      progressEstimate.textContent = estimate;
+    }
+
+    if (progress > 0 && progress < 100) {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const estimatedTotal = (elapsed / progress) * 100;
+      const remaining = estimatedTotal - elapsed;
+      
+      if (remaining > 60) {
+        const mins = Math.floor(remaining / 60);
+        progressEstimate.textContent = `~${mins}m remaining`;
+      } else if (remaining > 0) {
+        progressEstimate.textContent = `~${Math.round(remaining)}s remaining`;
+      }
     }
 
     if (message != "") {
@@ -247,6 +272,7 @@ function setupProgressListener() {
         generationButtonEnabled = true;
       } else if (message.startsWith("Done!")) {
         progressInfo.style.color = "#7bd864";
+        progressEstimate.textContent = "";
         generationButtonEnabled = true;
       } else {
         progressInfo.style.color = "#ececec";

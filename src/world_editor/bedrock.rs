@@ -164,19 +164,19 @@ impl BedrockWriter {
         self.prepare_output_dir()?;
         self.write_level_name()?;
 
-        emit_gui_progress_update(91.0, "Saving Bedrock world...");
+        emit_gui_progress_update(91.0, "Saving Bedrock world...", Some("7/7"), None);
         self.write_level_dat(xzbbox)?;
 
-        emit_gui_progress_update(92.0, "Saving Bedrock world...");
+        emit_gui_progress_update(92.0, "Saving Bedrock world...", Some("7/7"), None);
         self.write_chunks_to_db(world)?;
 
-        emit_gui_progress_update(97.0, "Saving Bedrock world...");
+        emit_gui_progress_update(97.0, "Saving Bedrock world...", Some("7/7"), None);
         self.write_metadata(world, xzbbox, llbbox)?;
 
-        emit_gui_progress_update(98.0, "Saving Bedrock world...");
+        emit_gui_progress_update(98.0, "Saving Bedrock world...", Some("7/7"), None);
         self.package_mcworld()?;
 
-        emit_gui_progress_update(99.0, "Saving Bedrock world...");
+        emit_gui_progress_update(99.0, "Saving Bedrock world...", Some("7/7"), None);
         self.cleanup_temp_dir()?;
         Ok(())
     }
@@ -495,7 +495,7 @@ impl BedrockWriter {
                     if chunks_processed.is_multiple_of(10) || chunks_processed == total_chunks {
                         let chunk_progress = chunks_processed as f64 / total_chunks as f64;
                         let gui_progress = 92.0 + (chunk_progress * 5.0); // 92% to 97%
-                        emit_gui_progress_update(gui_progress, "");
+                        emit_gui_progress_update(gui_progress, "", Some("7/7"), None);
                     }
                 }
             }

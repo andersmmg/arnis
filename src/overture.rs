@@ -191,7 +191,7 @@ fn fetch_overture_buildings_inner(
         .user_agent(concat!("arnis/", env!("CARGO_PKG_VERSION")))
         .build()?;
 
-    emit_gui_progress_update(14.5, "Fetching Overture Maps data...");
+    emit_gui_progress_update(14.5, "Fetching Overture Maps data...", Some("1/7"), None);
 
     // List partition files whose geographic bounds overlap our bbox
     // (single ~230 KB STAC download instead of 512 HTTP requests)

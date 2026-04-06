@@ -314,7 +314,7 @@ impl Ground {
 pub fn generate_ground_data(args: &Args) -> Ground {
     if args.terrain {
         println!("{} Fetching elevation...", "[3/7]".bold());
-        emit_gui_progress_update(14.0, "Fetching elevation...");
+        emit_gui_progress_update(14.0, "Fetching elevation...", Some("3/7"), None);
         let ground =
             Ground::new_enabled(&args.bbox, args.scale, args.ground_level, args.land_cover);
         if args.debug {

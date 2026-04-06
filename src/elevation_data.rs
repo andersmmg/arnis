@@ -361,7 +361,7 @@ pub fn fetch_elevation_data(
     }
 
     println!("Processing {} elevation tiles...", successful_tiles.len());
-    emit_gui_progress_update(15.0, "Processing elevation...");
+    emit_gui_progress_update(15.0, "Processing elevation...", Some("3/7"), None);
 
     // Process tiles sequentially (writes to shared height_grid)
     for ((tile_x, tile_y), rgb_img) in successful_tiles {

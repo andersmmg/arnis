@@ -100,7 +100,7 @@ impl<'a> WorldEditor<'a> {
     /// Returns an error if any region fails to save (e.g. disk full).
     pub(super) fn save_java(&mut self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         println!("{} Saving world...", "[7/7]".bold());
-        emit_gui_progress_update(90.0, "Saving world...");
+        emit_gui_progress_update(90.0, "Saving world...", Some("7/7"), None);
 
         // Save metadata with error handling
         if let Err(e) = self.save_metadata() {
@@ -156,7 +156,7 @@ impl<'a> WorldEditor<'a> {
                 let update_interval = (total_regions / 10).max(1);
                 if regions_done.is_multiple_of(update_interval) || regions_done == total_regions {
                     let progress = 90.0 + (regions_done as f64 / total_regions as f64) * 9.0;
-                    emit_gui_progress_update(progress, "Saving world...");
+                    emit_gui_progress_update(progress, "Saving world...", Some("7/7"), None);
                 }
 
                 save_pb.inc(1);

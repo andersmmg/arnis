@@ -938,7 +938,7 @@ fn gui_start_generation(
                 // Explicitly release session lock before showing Done message
                 // so Minecraft can open the world immediately
                 drop(_session_lock);
-                emit_gui_progress_update(100.0, "Done! World generation completed.");
+                emit_gui_progress_update(100.0, "Done! World generation completed.", None, None);
                 println!("{}", "Done! World generation completed.".green().bold());
 
                 // Start map preview generation silently in background (Java only)
@@ -1016,7 +1016,7 @@ fn gui_start_generation(
                     // Explicitly release session lock before showing Done message
                     // so Minecraft can open the world immediately
                     drop(_session_lock);
-                    emit_gui_progress_update(100.0, "Done! World generation completed.");
+                emit_gui_progress_update(100.0, "Done! World generation completed.", None, None);
                     println!("{}", "Done! World generation completed.".green().bold());
 
                     // Start map preview generation silently in background (Java only)

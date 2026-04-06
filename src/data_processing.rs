@@ -58,7 +58,7 @@ pub fn generate_world_with_options(
     editor.set_ground(Arc::clone(&ground));
 
     println!("{} Processing terrain...", "[5/7]".bold());
-    emit_gui_progress_update(25.0, "Processing terrain...");
+    emit_gui_progress_update(25.0, "Processing terrain...", Some("5/7"), None);
 
     // Pre-compute all flood fills in parallel for better CPU utilization
     let mut flood_fill_cache = FloodFillCache::precompute(&elements, args.timeout.as_ref());
@@ -111,7 +111,7 @@ pub fn generate_world_with_options(
         process_pb.inc(1);
         current_progress_prcs += progress_increment_prcs;
         if (current_progress_prcs - last_emitted_progress).abs() > 0.25 {
-            emit_gui_progress_update(current_progress_prcs, "");
+            emit_gui_progress_update(current_progress_prcs, "", Some("5/7"), None);
             last_emitted_progress = current_progress_prcs;
         }
 
@@ -320,7 +320,7 @@ pub fn generate_world_with_options(
         return Err(e.to_string());
     }
 
-    emit_gui_progress_update(99.0, "Finalizing world...");
+    emit_gui_progress_update(99.0, "Finalizing world...", Some("7/7"), None);
 
     // Update player spawn Y coordinate based on terrain height after generation
     #[cfg(feature = "gui")]

@@ -26,7 +26,7 @@ fn download_with_reqwest(url: &str, query: &str) -> Result<String, Box<dyn std::
 
     match response {
         Ok(resp) => {
-            emit_gui_progress_update(3.0, "Downloading data...");
+            emit_gui_progress_update(3.0, "Downloading data...", Some("1/7"), None);
             if resp.status().is_success() {
                 let text = resp.text()?;
                 if text.is_empty() {
@@ -97,7 +97,7 @@ fn download_with_wget(url: &str, query: &str) -> io::Result<String> {
 
 pub fn fetch_data_from_file(file: &str) -> Result<OsmData, Box<dyn std::error::Error>> {
     println!("{} Loading data from file...", "[1/7]".bold());
-    emit_gui_progress_update(1.0, "Loading data from file...");
+    emit_gui_progress_update(1.0, "Loading data from file...", Some("1/7"), None);
 
     let file: File = File::open(file)?;
     let reader: BufReader<File> = BufReader::new(file);
@@ -114,7 +114,7 @@ pub fn fetch_data_from_overpass(
     save_file: Option<&str>,
 ) -> Result<OsmData, Box<dyn std::error::Error>> {
     println!("{} Fetching data...", "[1/7]".bold());
-    emit_gui_progress_update(1.0, "Fetching data...");
+    emit_gui_progress_update(1.0, "Fetching data...", Some("1/7"), None);
 
     // List of Overpass API servers
     let api_servers: Vec<&str> = vec![
@@ -264,7 +264,7 @@ pub fn fetch_data_from_overpass(
             }
         }
 
-        emit_gui_progress_update(5.0, "");
+        emit_gui_progress_update(5.0, "", Some("1/7"), None);
 
         Ok(data)
     }

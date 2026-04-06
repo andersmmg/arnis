@@ -55,7 +55,7 @@ pub fn generate_ground_layer(
     let mut block_counter: u64 = 0;
 
     println!("{} Generating ground...", "[6/7]".bold());
-    emit_gui_progress_update(70.0, "Generating ground...");
+    emit_gui_progress_update(70.0, "Generating ground...", Some("6/7"), None);
 
     let ground_pb: ProgressBar = ProgressBar::new(total_blocks);
     ground_pb.set_style(
@@ -663,7 +663,7 @@ pub fn generate_ground_layer(
 
                     gui_progress_grnd += progress_increment_grnd;
                     if (gui_progress_grnd - last_emitted_progress).abs() > 0.25 {
-                        emit_gui_progress_update(gui_progress_grnd, "");
+                        emit_gui_progress_update(gui_progress_grnd, "", Some("6/7"), None);
                         last_emitted_progress = gui_progress_grnd;
                     }
                 }
