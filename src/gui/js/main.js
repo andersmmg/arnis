@@ -233,8 +233,6 @@ function setupProgressListener() {
   const progressStep = document.getElementById("progress-step");
   const progressEstimate = document.getElementById("progress-estimate");
 
-  const startTime = Date.now();
-
   window.__TAURI__.event.listen("progress-update", (event) => {
     const { progress, message, step, estimate } = event.payload;
 
@@ -251,27 +249,17 @@ function setupProgressListener() {
       progressEstimate.textContent = estimate;
     }
 
-    if (progress > 0 && progress < 100) {
-      const elapsed = (Date.now() - startTime) / 1000;
-      const estimatedTotal = (elapsed / progress) * 100;
-      const remaining = estimatedTotal - elapsed;
-      
-      if (remaining > 60) {
-        const mins = Math.floor(remaining / 60);
-        progressEstimate.textContent = `~${mins}m remaining`;
-      } else if (remaining > 0) {
-        progressEstimate.textContent = `~${Math.round(remaining)}s remaining`;
-      }
-    }
-
     if (message != "") {
       progressInfo.textContent = message;
 
       if (message.startsWith("Error!")) {
         progressInfo.style.color = "#fa7878";
+        progressStep.textContent = "";
+        progressEstimate.textContent = "";
         generationButtonEnabled = true;
       } else if (message.startsWith("Done!")) {
         progressInfo.style.color = "#7bd864";
+        progressStep.textContent = "";
         progressEstimate.textContent = "";
         generationButtonEnabled = true;
       } else {

@@ -2,9 +2,11 @@
 use crate::telemetry::{send_log, LogLevel};
 use once_cell::sync::OnceCell;
 use serde_json::json;
+use std::time::Instant;
 use tauri::{Emitter, WebviewWindow};
 
 pub static MAIN_WINDOW: OnceCell<WebviewWindow> = OnceCell::new();
+static START_TIME: OnceCell<Instant> = OnceCell::new();
 
 pub fn set_main_window(window: WebviewWindow) {
     MAIN_WINDOW.set(window).ok();
@@ -12,6 +14,28 @@ pub fn set_main_window(window: WebviewWindow) {
 
 pub fn get_main_window() -> Option<&'static WebviewWindow> {
     MAIN_WINDOW.get()
+}
+
+fn start_timer_if_needed() {
+    if START_TIME.get().is_none() {
+        START_TIME.set(Instant::now()).ok();
+    }
+}
+
+fn get_elapsed_secs() -> f64 {
+    START_TIME
+        .get()
+        .map(|t| t.elapsed().as_secs_f64())
+        .unwrap_or(0.0)
+}
+
+fn format_eta(seconds: f64) -> String {
+    if seconds >= 60.0 {
+        let mins = (seconds / 60.0).round() as i32;
+        format!("~{}m", mins)
+    } else {
+        format!("~{}s", seconds.round() as i32)
+    }
 }
 
 /// This function checks if the program is running with a GUI window.
@@ -36,14 +60,35 @@ pub fn emit_gui_progress_update(
     progress: f64,
     message: &str,
     step: Option<&str>,
-    estimate: Option<&str>,
+    force_estimate: Option<&str>,
 ) {
+    start_timer_if_needed();
+
+    let estimate_str = if let Some(est) = force_estimate {
+        est.to_string()
+    } else if progress > 0.0 && progress < 100.0 {
+        let elapsed = get_elapsed_secs();
+        if elapsed > 0.5 {
+            let total_estimated = (elapsed / progress) * 100.0;
+            let remaining = total_estimated - elapsed;
+            if remaining > 0.0 {
+                format_eta(remaining)
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        }
+    } else {
+        String::new()
+    };
+
     if let Some(window) = get_main_window() {
         let payload = json!({
             "progress": progress,
             "message": message,
             "step": step.unwrap_or(""),
-            "estimate": estimate.unwrap_or("")
+            "estimate": estimate_str
         });
 
         if let Err(e) = window.emit("progress-update", payload) {
